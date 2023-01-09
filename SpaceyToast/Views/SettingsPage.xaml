@@ -1,0 +1,36 @@
+﻿<Page
+    x:Class="SpaceyToast.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:SpaceyToast.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d">
+
+    <Grid Margin="56, 56, 56, 0" 
+          RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Settings"
+                   Grid.Row="0"
+                   Style="{ThemeResource TitleTextBlockStyle}" />
+
+        <StackPanel Grid.Row="1" Spacing="12">
+            <TextBlock Text="Personalization" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+            <winui:RadioButtons Header="Choose an app mode">
+                <RadioButton x:Name="RadioBtnLightTheme" Content="Light"/>
+                <RadioButton x:Name="RadioBtnDarkTheme" Content="Dark"/>
+                <RadioButton x:Name="RadioBtnDefaultTheme" Content="Windows Default"/>
+            </winui:RadioButtons>
+            <HyperlinkButton Margin="0, -12, 0, 0" Content="Windows color settings" NavigateUri="ms-settings:colors"/>
+
+            <TextBlock Text="Cloud service" Style="{ThemeResource SubheaderTextBlockStyle}"/>
+            <Button Content="Sign in" Click="SignInButton_Click"/>
+            <ToggleSwitch Header="Enable synchronization"/>
+        </StackPanel>
+    </Grid>
+</Page>

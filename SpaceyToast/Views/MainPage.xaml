@@ -1,0 +1,66 @@
+﻿<Page
+    x:Class="SpaceyToast.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    mc:Ignorable="d"
+    Background="{ThemeResource NavigationViewDefaultPaneBackground}">
+
+    <Page.Resources>
+        <CornerRadius x:Key="NavigationViewContentGridCornerRadius">0</CornerRadius>
+        <Thickness x:Key="NavigationViewContentMargin">0,48,0,0</Thickness>
+    </Page.Resources>
+
+    <Grid>
+        <Border Grid.Row="0" Background="Transparent" VerticalAlignment="Top" HorizontalAlignment="Stretch" x:Name="CoreApplicationTitleBar" IsHitTestVisible="True" Height="48"
+                Canvas.ZIndex="1" Margin="48, 0, 0, 0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Image Grid.Column="0" Source="/Data/UI/Icons/sample.png" 
+                       Width="16" 
+                       Height="16" 
+                       HorizontalAlignment="Left" 
+                       VerticalAlignment="Center"/>
+                <TextBlock Grid.Column="1" x:Name="CoreAppTitle" 
+                           Text="My application"
+                           VerticalAlignment="Center" 
+                           Margin="8, 0, 0, 0" 
+                           Style="{StaticResource CaptionTextBlockStyle}"/>
+            </Grid>
+        </Border>
+        <muxc:NavigationView IsTitleBarAutoPaddingEnabled="False" Grid.Row="0"
+                             x:Name="MainNavView" 
+                             IsBackButtonVisible="Visible"
+                             IsBackEnabled="{x:Bind MainFrame.CanGoBack, Mode=OneWay}"
+                             BackRequested="MainNavView_BackRequested"
+                             ItemInvoked="MainNavView_ItemInvoked" 
+                             Loaded="MainNavView_Loaded"
+            IsSettingsVisible="False">
+            <muxc:NavigationView.MenuItems>
+                <muxc:NavigationViewItem x:Name="CalendarNavViewItem" Content="Calendar" Tag="Calendar">
+                    <muxc:NavigationViewItem.Icon>
+                        <muxc:ImageIcon Source="/Data/UI/Icons/Common/calendar.png"/>
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem x:Name="TagsNavViewItem" Content="Tags" Tag="Tags">
+                    <muxc:NavigationViewItem.Icon>
+                        <muxc:ImageIcon Source="/Data/UI/Icons/Common/tags.png"/>
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+                <muxc:NavigationViewItem x:Name="SettingsNavViewItem" Content="Settings" Tag="Settings">
+                    <muxc:NavigationViewItem.Icon>
+                        <muxc:ImageIcon Source="/Data/UI/Icons/Common/settings.png"/>
+                    </muxc:NavigationViewItem.Icon>
+                </muxc:NavigationViewItem>
+            </muxc:NavigationView.MenuItems>
+            <Frame x:Name="MainFrame"
+                   Navigated="MainFrame_Navigated"/>
+        </muxc:NavigationView>
+    </Grid>
+</Page>

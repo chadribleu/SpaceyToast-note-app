@@ -1,0 +1,16 @@
+﻿<Application
+    x:Class="SpaceyToast.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="using:SpaceyToast.Converters">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <winui:XamlControlsResources xmlns:winui="using:Microsoft.UI.Xaml.Controls"/>
+            </ResourceDictionary.MergedDictionaries>
+            
+            <!-- Converters -->
+            <converters:CountToVisibilityConverter x:Key="CountToVisibilityConverter"/>
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>

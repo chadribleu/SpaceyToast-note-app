@@ -1,0 +1,351 @@
+﻿<Page
+    x:Class="SpaceyToast.Views.DrawingArea"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:SpaceyToast.Models"
+    xmlns:winui="using:Microsoft.UI.Xaml.Controls" xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <ResourceDictionary>
+            <x:Double x:Key="AppBarExpandButtonThemeWidth">0</x:Double>
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Light">
+                    <BitmapImage x:Key="BrushIcon" UriSource="/Data/UI/Icons/Light/brush.png"/>
+                    <BitmapImage x:Key="PenIcon" UriSource="/Data/UI/Icons/Light/pencil.png"/>
+                    <BitmapImage x:Key="EraserIcon" UriSource="/Data/UI/Icons/Light/eraser.png"/>
+                    <BitmapImage x:Key="ImageToolIcon" UriSource="/Data/UI/Icons/Light/imagetool.png"/>
+                    <BitmapImage x:Key="TextToolIcon" UriSource="/Data/UI/Icons/Light/text.png"/>
+                    <BitmapImage x:Key="LassoIcon" UriSource="/Data/UI/Icons/Light/lasso.png"/>
+                    <BitmapImage x:Key="CursorIcon" UriSource="/Data/UI/Icons/Light/cursor.png"/>
+                    <BitmapImage x:Key="PanelWrap" UriSource="/Data/UI/Panels/Light/down.png"/>
+                    <BitmapImage x:Key="PanelUnwrap" UriSource="/Data/UI/Panels/Light/up.png"/>
+                    <BitmapImage x:Key="PenShapeCircle" UriSource="/Data/UI/Panels/Light/shape_circle.png"/>
+                    <BitmapImage x:Key="StarIcon" UriSource="/Data/UI/Icons/Common/star.png"/>
+                    <BitmapImage x:Key="TrashIcon" UriSource="/Data/UI/Icons/Light/trash.png"/>
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Dark">
+                    <BitmapImage x:Key="BrushIcon" UriSource="/Data/UI/Icons/Dark/brush.png"/>
+                    <BitmapImage x:Key="PenIcon" UriSource="/Data/UI/Icons/Dark/pencil.png"/>
+                    <BitmapImage x:Key="EraserIcon" UriSource="/Data/UI/Icons/Dark/eraser.png"/>
+                    <BitmapImage x:Key="ImageToolIcon" UriSource="/Data/UI/Icons/Dark/imagetool.png"/>
+                    <BitmapImage x:Key="TextToolIcon" UriSource="/Data/UI/Icons/Dark/text.png"/>
+                    <BitmapImage x:Key="LassoIcon" UriSource="/Data/UI/Icons/Dark/lasso.png"/>
+                    <BitmapImage x:Key="CursorIcon" UriSource="/Data/UI/Icons/Dark/cursor.png"/>
+                    <BitmapImage x:Key="PanelWrap" UriSource="/Data/UI/Panels/Dark/down.png"/>
+                    <BitmapImage x:Key="PanelUnwrap" UriSource="/Data/UI/Panels/Dark/up.png"/>
+                    <BitmapImage x:Key="PenShapeCircle" UriSource="/Data/UI/Panels/Dark/shape_circle.png"/>
+                    <BitmapImage x:Key="StarIcon" UriSource="/Data/UI/Icons/Common/star.png"/>
+                    <BitmapImage x:Key="TrashIcon" UriSource="/Data/UI/Icons/Dark/trash.png"/>
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
+        </ResourceDictionary>
+    </Page.Resources>
+
+    <Grid x:Name="MainLayout">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Drawing area -->
+        <ScrollViewer Grid.Row="1" 
+                      x:Name="DrawingView" 
+                      ZoomMode="Disabled" 
+                      VerticalScrollMode="Disabled" 
+                      HorizontalScrollMode="Disabled"
+                      VerticalScrollBarVisibility="Hidden" 
+                      HorizontalScrollBarVisibility="Hidden"
+                      PointerPressed="OverlayCanvas_PointerPressed"
+                      PointerMoved="OverlayCanvas_PointerMoved"
+                      PointerReleased="OverlayCanvas_PointerReleased"
+                      PointerWheelChanged="OverlayCanvas_PointerWheelChanged"
+                      ManipulationDelta="DrawingView_ManipulationDelta"
+                      ManipulationMode="Scale, TranslateX, TranslateY">
+            <Grid x:Name="CanvasGrid" 
+                  Background="{ThemeResource SystemChromeWhiteColor}">
+                <Canvas x:Name="ObjectLayer" 
+                        Width="Auto" 
+                        Height="Auto"/>
+                <InkCanvas IsHitTestVisible="False" 
+                           x:Name="InkRenderer"
+                           Width="Auto"
+                           Height="Auto"/>
+                <Canvas x:Name="OverlayCanvas" 
+                        Width="Auto" 
+                        Height="Auto">
+                    <Canvas.KeyboardAccelerators>
+                        <KeyboardAccelerator Key="Delete" 
+                                             Invoked="OnKeyboardDelKey" />
+                        <KeyboardAccelerator Key="Z"
+                                             Modifiers="Control"
+                                             Invoked="OnUndo"/>
+                    </Canvas.KeyboardAccelerators>
+                </Canvas>
+            </Grid>
+        </ScrollViewer>
+
+        <Border Grid.Row="0" 
+                Background="{ThemeResource NavigationViewDefaultPaneBackground}" 
+                Margin="-1, -1, 0, 0" 
+                VerticalAlignment="Top" 
+                Height="70"
+                BorderThickness="0, 0, 0, 1"
+                BorderBrush="{ThemeResource CardStrokeColorDefaultBrush }">
+            <Grid x:Name="ToolBarArea" 
+                  HorizontalAlignment="Stretch" 
+                  VerticalAlignment="Center">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <controls:AdaptiveGridView x:Name="ColorsToolbar"
+                                           DesiredWidth="24"
+                                           ItemHeight="24"
+                                           IsItemClickEnabled="True" 
+                                           HorizontalAlignment="Left" 
+                                           VerticalAlignment="Center" 
+                                           ScrollViewer.VerticalScrollMode="Auto"
+                                           ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                                           ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+                                           ScrollViewer.HorizontalScrollMode="Disabled"
+                                           ItemClick="ColorsToolbar_ItemClick"
+                                           Grid.Column="0">
+
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <ItemsWrapGrid Orientation="Horizontal"
+                                   MaximumRowsOrColumns="10"/>
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="Margin" 
+                            Value="2, 2, 2, 0"/>
+                            <Setter Property="MinWidth" 
+                            Value="28"/>
+                            <Setter Property="MinHeight" 
+                            Value="28"/>
+                        </Style>
+                    </GridView.ItemContainerStyle>
+
+                    <GridView.ItemTemplate>
+                        <DataTemplate x:DataType="models:ColorPalette">
+                            <Grid>
+                                <Ellipse Width="24" 
+                                         Height="24" 
+                                         StrokeThickness="2"
+                                         Fill="{Binding FillColor}"
+                                         Stroke="{Binding BorderColor}">
+                                    <FlyoutBase.AttachedFlyout>
+                                        <Flyout>
+                                            <Flyout.Content>
+                                                <controls:ColorPicker 
+                                                    ColorChanged="OnColorPickerColorChanged"/>
+                                            </Flyout.Content>
+                                        </Flyout>
+                                    </FlyoutBase.AttachedFlyout>
+                                </Ellipse>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                </controls:AdaptiveGridView>
+
+                <Border VerticalAlignment="Center"
+                        HorizontalAlignment="Stretch"
+                        Grid.Column="1">
+                    <CommandBar Grid.Column="1" 
+                                x:Name="SelectionCommandBar" 
+                                DefaultLabelPosition="Right"
+                                Visibility="Collapsed">
+                        <AppBarButton x:Name="CommandBarCopyButton" 
+                                          Label="Copy" Click="OnCopyCommand"/>
+                        <AppBarButton x:Name="CommandBarCutButton" 
+                                          Label="Cut" Click="OnCutCommand"/>
+                        <AppBarButton x:Name="CommandBarPasteButton"  
+                                          Label="Paste" Click="OnPasteCommand"/>
+                        <AppBarButton x:Name="CommandBarDeleteButton" 
+                                          Label="Delete" Click="OnDeleteCommand"/>
+                    </CommandBar>
+                </Border>
+
+                <StackPanel Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right" 
+                            Padding="12, 0, 12, 0"
+                            Spacing="12">
+
+                    <InkToolbar x:Name="SpaceyToastToolBar" 
+                                ActiveToolChanged="InkToolbar_ActiveToolChanged" 
+                                InitialControls="None" 
+                                TargetInkCanvas="{x:Bind InkRenderer}"
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center" 
+                                Orientation="Horizontal"
+                                Grid.Column="1">
+                        <InkToolbarCustomPenButton x:Name="PencilTool" 
+                                                   SelectedBrushIndex="0" 
+                                                   ToolTipService.ToolTip="Pen">
+                            <InkToolbarCustomPenButton.ConfigurationContent>
+                                <StackPanel Grid.Row="1" 
+                                            BorderThickness="1" 
+                                            BorderBrush="{ThemeResource AppBarBorderThemeBrush}" 
+                                            Background="{ThemeResource SystemControlAcrylicElementBrush}" 
+                                            Padding="24" 
+                                            Spacing="16" 
+                                            Orientation="Horizontal">
+                                    <StackPanel Spacing="5">
+                                        <StackPanel HorizontalAlignment="Stretch" 
+                                                    Orientation="Horizontal">
+                                            <StackPanel>
+                                                <ToggleSwitch x:Name="Pen_IsPressureEnabled" 
+                                                              Header="Pressure:"
+                                                              Toggled="Pen_IsPressureEnabled_Toggled"/>
+                                                <ToggleSwitch x:Name="Pen_IsTiltEnabled" 
+                                                              Header="Tilt:"
+                                                              Toggled="Pen_IsTiltEnabled_Toggled"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <Slider x:Name="InkQuantitySlider" 
+                                                HorizontalAlignment="Stretch" 
+                                                Header="Size" 
+                                                Orientation="Horizontal" 
+                                                Minimum="1" 
+                                                Maximum="64" 
+                                                ValueChanged="InkQuantitySlider_ValueChanged"/>
+                                        <Slider x:Name="OpacitySlider" 
+                                                HorizontalAlignment="Stretch" 
+                                                Header="Opacity" Minimum="0.1" 
+                                                Maximum="5.0" 
+                                                StepFrequency="0.1" 
+                                                ValueChanged="OpacitySlider_ValueChanged"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </InkToolbarCustomPenButton.ConfigurationContent>
+                            <Image Source="{StaticResource PenIcon}" 
+                                   Width="24"/>
+                        </InkToolbarCustomPenButton>
+                        <InkToolbarCustomPenButton x:Name="BrushTool" 
+                                                   SelectedBrushIndex="1" 
+                                                   ToolTipService.ToolTip="Brush">
+                            <InkToolbarCustomPenButton.ConfigurationContent>
+                                <StackPanel Spacing="16" 
+                                            Margin="16">
+                                    <winui:RadioButtons Header="Shape" 
+                                                        VerticalAlignment="Top" 
+                                                        HorizontalAlignment="Left">
+                                        <RadioButton x:Name="Brush_CircleShape" 
+                                                     Content="Circle" 
+                                                     Checked="RadioButton_Checked"/>
+                                        <RadioButton x:Name="Brush_SquareShape" 
+                                                     Content="Rectangle" 
+                                                     Checked="RadioButton_Checked_1"/>
+                                    </winui:RadioButtons>
+                                    <Slider x:Name="BrushSizeSlider" 
+                                            Minimum="1" 
+                                            Maximum="64"
+                                            Header="Size:" 
+                                            ValueChanged="BrushSizeSlider_ValueChanged"/>
+                                </StackPanel>
+                            </InkToolbarCustomPenButton.ConfigurationContent>
+                            <Image Width="24" Source="{StaticResource BrushIcon}"/>
+                        </InkToolbarCustomPenButton>
+                        <InkToolbarCustomToolButton x:Name="EraserTool" 
+                                                    ToolTipService.ToolTip="Eraser">
+                            <Image Width="24" Source="{StaticResource EraserIcon}"/>
+                        </InkToolbarCustomToolButton>
+                        <InkToolbarCustomToolButton x:Name="AddPicture" 
+                                                    ToolTipService.ToolTip="Picture tool" 
+                                                    Click="AddPicture_Click">
+                            <Image Width="24" Source="{StaticResource ImageToolIcon}"/>
+                        </InkToolbarCustomToolButton>
+                        <InkToolbarCustomToolButton x:Name="SelectionToolFree" 
+                                                    ToolTipService.ToolTip="Ink Lasso tool" 
+                                                    Click="SelectionToolFree_Click">
+                            <Image Width="24" Source="{StaticResource LassoIcon}"/>
+                        </InkToolbarCustomToolButton>
+                        <InkToolbarCustomToolButton x:Name="CursorTool" 
+                                                    ToolTipService.ToolTip="Cursor tool">
+                            <Image Width="24" Source="{StaticResource CursorIcon}"/>
+                        </InkToolbarCustomToolButton>
+                    </InkToolbar>
+
+                    <DropDownButton 
+                        Margin="0, 0, 12, 0"
+                        HorizontalAlignment="Right"
+                        CornerRadius="4">
+                        <Grid x:Name="TagButtonContent">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Image 
+                                Grid.Column="0" 
+                                Source="{StaticResource StarIcon}" 
+                                Width="24" 
+                                Height="24"/>
+                            <TextBlock 
+                                x:Name="TagLabel" 
+                                VerticalAlignment="Center"
+                                Grid.Column="1" Style="{StaticResource BodyTextBlockStyle}"
+                                Margin="6, 0, 6, 0"/>
+                        </Grid>
+                        <DropDownButton.Flyout>
+                            <Flyout>
+                                <StackPanel 
+                                    Spacing="12">
+                                    <TextBlock 
+                                        Text="Associated tags" 
+                                        FontWeight="SemiBold" 
+                                        FontSize="14"/>
+                                    <TextBox 
+                                        x:Name="AddTagsTextBox" 
+                                        PlaceholderText="Add a new tag" 
+                                        KeyDown="AddTagsTextBox_KeyDown"/>
+                                    <ScrollViewer 
+                                        VerticalScrollBarVisibility="Auto" 
+                                        VerticalScrollMode="Enabled">
+                                        <winui:ItemsRepeater 
+                                            x:Name="AddTagsHost"
+                                            Width="250">
+                                            <winui:ItemsRepeater.ItemTemplate>
+                                                <DataTemplate 
+                                                    x:DataType="models:TagsLinker">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        <CheckBox Content="{Binding Name}"
+                                                                  Tag="{Binding Name}"
+                                                                  IsChecked="{Binding IsAssigned}"
+                                                                  Checked="CheckBox_Checked"
+                                                                  Unchecked="CheckBox_Unchecked"
+                                                                  HorizontalAlignment="Stretch"/>
+                                                        <Button Grid.Column="1" 
+                                                                HorizontalAlignment="Right"
+                                                                Width="24"
+                                                                Height="24"
+                                                                Click="DeleteTagButtonClicked">
+                                                            <Image Source="{StaticResource TrashIcon}" Width="16" Height="16" Margin="-24"/>
+                                                        </Button>
+                                                    </Grid>
+                                                </DataTemplate>
+                                            </winui:ItemsRepeater.ItemTemplate>
+                                        </winui:ItemsRepeater>
+                                    </ScrollViewer>
+                                </StackPanel>
+                            </Flyout>
+                        </DropDownButton.Flyout>
+                    </DropDownButton>
+
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Page>

@@ -1,0 +1,76 @@
+﻿<Page
+    x:Class="SpaceyToast.Views.TagsPage.Host"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Margin="56, 56, 56, 0" 
+          RowSpacing="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Tags"
+                   Grid.Row="0"
+                   Style="{ThemeResource TitleTextBlockStyle}" />
+
+        <StackPanel Orientation="Vertical"
+                    Grid.Row="1"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12"
+                    Visibility="{Binding ElementName=TagsList, Path=ItemsSource.Count, Converter={StaticResource CountToVisibilityConverter}}">
+
+            <Image Source="/Data/UI/Icons/Common/tags.png"
+                   Opacity="0.7"
+                   Width="96"
+                   Height="96"/>
+            <TextBlock x:Name="NoTagsFoundText"
+                       Text="Unable to find any tags. Start a new drawing session and click on the little star to add a new tag." 
+                       Opacity="0.5"
+                       Visibility="Visible"/>
+        </StackPanel>
+
+        <ListView x:Name="TagsList"
+                  HorizontalContentAlignment="Stretch"
+                  SelectionMode="Single"
+                  IsItemClickEnabled="True"
+                  ItemClick="TagsList_ItemClick"
+                  Grid.Row="1"
+                  >
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Margin"
+                            Value="-12, 12, -12, 0"/>
+                </Style>
+            </ListView.ItemContainerStyle>
+            
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Background="{ThemeResource LayerFillColorDefaultBrush}" 
+                          BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                          CornerRadius="4"
+                          BorderThickness="1" 
+                          Padding="16">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock VerticalAlignment="Center" Text="{Binding}" Style="{StaticResource BodyTextBlockStyle}"/>
+
+                        <FontIcon FontFamily="Segoe MDL2 Assets"
+                                  Glyph="&#xEBE7;"
+                                  Grid.Column="1"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

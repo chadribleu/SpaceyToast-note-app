@@ -1,0 +1,42 @@
+﻿<Page
+    x:Class="SpaceyToast.Views.CalendarPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:SpaceyToast.Models"
+    xmlns:muxc="using:Microsoft.UI.Xaml.Controls"
+    xmlns:monthview="using:SpaceyToast.UserControls.MonthView"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <DataTemplate x:Key="MonthCalendarDataTemplate" x:DataType="models:MonthViewData">
+            <monthview:MonthViewCalendar Days="{x:Bind Days}" 
+                                         Month="{x:Bind Month}"
+                                         Year="{x:Bind Year}"
+                                         OnDayClicked="MonthViewCalendar_OnDayClicked"
+                                         Height="400"
+                                         Width="400"/>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Margin="48, 48, 0, 0" Orientation="Vertical" Spacing="16">
+            <TextBlock x:Name="CalendarPageHeader" VerticalAlignment="Center" Style="{ThemeResource SubheaderTextBlockStyle}" FontWeight="Semibold" Text="Calendar"/>
+            <ComboBox x:Name="YearSelector" PlaceholderText="Loading..." SelectionChanged="YearSelector_SelectionChanged" VerticalAlignment="Center"/>
+        </StackPanel>
+        <ScrollViewer Grid.Row="1" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+                      HorizontalScrollMode="Auto" VerticalScrollMode="Disabled" HorizontalScrollBarVisibility="Auto" Margin="0, 48, 0, 0"
+                      Padding="0, 0, 0, 15">
+            <muxc:ItemsRepeater x:Name="MonthViewPanel" ItemTemplate="{StaticResource MonthCalendarDataTemplate}">
+                <muxc:ItemsRepeater.Layout>
+                    <muxc:StackLayout Orientation="Horizontal" Spacing="0"/>
+                </muxc:ItemsRepeater.Layout>
+            </muxc:ItemsRepeater>
+        </ScrollViewer>
+    </Grid>
+</Page>
